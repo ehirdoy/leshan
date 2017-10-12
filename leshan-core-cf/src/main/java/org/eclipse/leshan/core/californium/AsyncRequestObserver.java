@@ -12,6 +12,9 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Achim Kraus (Bosch Software Innovations GmbH) - redirect onSendError
+ *                                                     to error callback.
+ *     Simon Bernard                                 - use specific exception for onSendError                                                 
  *******************************************************************************/
 package org.eclipse.leshan.core.californium;
 
@@ -19,6 +22,7 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.leshan.core.request.exception.RequestCanceledException;
 import org.eclipse.leshan.core.request.exception.RequestRejectedException;
+import org.eclipse.leshan.core.request.exception.SendFailedException;
 import org.eclipse.leshan.core.response.ErrorCallback;
 import org.eclipse.leshan.core.response.LwM2mResponse;
 import org.eclipse.leshan.core.response.ResponseCallback;
@@ -69,4 +73,9 @@ public abstract class AsyncRequestObserver<T extends LwM2mResponse> extends Abst
         errorCallback.onError(new RequestRejectedException("Request %s rejected", coapRequest.getURI()));
     }
 
+    @Override
+    public void onSendError(Throwable error) {
+        errorCallback
+                .onError(new SendFailedException(error, "Request %s cannot be sent", coapRequest, error.getMessage()));
+    }
 }
