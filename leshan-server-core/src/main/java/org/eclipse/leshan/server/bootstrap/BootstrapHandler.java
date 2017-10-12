@@ -211,8 +211,7 @@ public class BootstrapHandler {
 
     private <T extends LwM2mResponse> void send(BootstrapSession session, DownlinkRequest<T> request,
             ResponseCallback<T> responseCallback, ErrorCallback errorCallback) {
-        sender.send(session.getEndpoint(), session.getIdentity().getPeerAddress(), session.getIdentity().isSecure(),
-                request, responseCallback, errorCallback);
+        sender.send(session.getEndpoint(), session.getIdentity(), request, responseCallback, errorCallback);
     }
 
     private LwM2mObjectInstance convertToSecurityInstance(int instanceId, ServerSecurity securityConfig) {

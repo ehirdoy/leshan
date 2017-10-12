@@ -27,6 +27,7 @@ import org.eclipse.leshan.LwM2m;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeDecoder;
 import org.eclipse.leshan.core.observation.Observation;
+import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.server.californium.CaliforniumRegistrationStore;
 import org.eclipse.leshan.server.model.StandardModelProvider;
 import org.eclipse.leshan.server.registration.Registration;
@@ -158,8 +159,8 @@ public class ObservationServiceTest {
                 LwM2m.DEFAULT_COAP_PORT);
         Registration.Builder builder;
         try {
-            builder = new Registration.Builder(registrationId, registrationId + "_ep", InetAddress.getLocalHost(),
-                    10000, registrationAddress);
+            builder = new Registration.Builder(registrationId, registrationId + "_ep",
+                    Identity.unsecure(new InetSocketAddress(InetAddress.getLocalHost(), 10000)), registrationAddress);
             return builder.build();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);

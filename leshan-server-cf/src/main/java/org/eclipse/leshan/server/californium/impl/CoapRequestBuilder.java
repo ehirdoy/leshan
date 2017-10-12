@@ -12,16 +12,20 @@
  * 
  * Contributors:
  *     Sierra Wireless - initial API and implementation
+ *     Achim Kraus (Bosch Software Innovations GmbH) - use Identity as destination
+ *                                                     and transform them to 
+ *                                                     EndpointContext for requests
  *******************************************************************************/
 package org.eclipse.leshan.server.californium.impl;
 
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Request;
+import org.eclipse.californium.elements.EndpointContext;
+import org.eclipse.leshan.core.californium.ExchangeUtil;
 import org.eclipse.leshan.core.model.LwM2mModel;
 import org.eclipse.leshan.core.node.LwM2mObjectInstance;
 import org.eclipse.leshan.core.node.LwM2mPath;
@@ -35,6 +39,7 @@ import org.eclipse.leshan.core.request.DeleteRequest;
 import org.eclipse.leshan.core.request.DiscoverRequest;
 import org.eclipse.leshan.core.request.DownlinkRequestVisitor;
 import org.eclipse.leshan.core.request.ExecuteRequest;
+import org.eclipse.leshan.core.request.Identity;
 import org.eclipse.leshan.core.request.ObserveRequest;
 import org.eclipse.leshan.core.request.ReadRequest;
 import org.eclipse.leshan.core.request.WriteAttributesRequest;
@@ -46,7 +51,7 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     private Request coapRequest;
 
     // client information
-    private final InetSocketAddress destination;
+    private final Identity destination;
     private final String rootPath;
     private final String registrationId;
     private final String endpoint;
@@ -59,7 +64,7 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     public static final String CTX_REGID = "leshan-regId";
     public static final String CTX_LWM2M_PATH = "leshan-path";
 
-    public CoapRequestBuilder(InetSocketAddress destination, LwM2mModel model, LwM2mNodeEncoder encoder) {
+    public CoapRequestBuilder(Identity destination, LwM2mModel model, LwM2mNodeEncoder encoder) {
         this.destination = destination;
         this.rootPath = null;
         this.registrationId = null;
@@ -68,9 +73,8 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
         this.encoder = encoder;
     }
 
-    public CoapRequestBuilder(InetSocketAddress destination, String rootPath, String registrationId, String endpoint,
-            LwM2mModel model,
-            LwM2mNodeEncoder encoder) {
+    public CoapRequestBuilder(Identity destination, String rootPath, String registrationId, String endpoint,
+            LwM2mModel model, LwM2mNodeEncoder encoder) {
         this.destination = destination;
         this.rootPath = rootPath;
         this.endpoint = endpoint;
@@ -169,16 +173,16 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     public void visit(BootstrapDeleteRequest request) {
         coapRequest = Request.newDelete();
         coapRequest.setConfirmable(true);
-        coapRequest.setDestination(destination.getAddress());
-        coapRequest.setDestinationPort(destination.getPort());
+        EndpointContext context = ExchangeUtil.extractContext(destination);
+        coapRequest.setDestinationContext(context);
     }
 
     @Override
     public void visit(BootstrapFinishRequest request) {
         coapRequest = Request.newPost();
         coapRequest.setConfirmable(true);
-        coapRequest.setDestination(destination.getAddress());
-        coapRequest.setDestinationPort(destination.getPort());
+        EndpointContext context = ExchangeUtil.extractContext(destination);
+        coapRequest.setDestinationContext(context);
 
         // root path
         if (rootPath != null) {
@@ -193,8 +197,8 @@ public class CoapRequestBuilder implements DownlinkRequestVisitor {
     }
 
     private final void setTarget(Request coapRequest, LwM2mPath path) {
-        coapRequest.setDestination(destination.getAddress());
-        coapRequest.setDestinationPort(destination.getPort());
+        EndpointContext context = ExchangeUtil.extractContext(destination);
+        coapRequest.setDestinationContext(context);
 
         // root path
         if (rootPath != null) {

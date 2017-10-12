@@ -105,4 +105,47 @@ public class Identity {
         else
             return String.format("Identity %s[unsecure]", peerAddress);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((peerAddress == null) ? 0 : peerAddress.hashCode());
+        result = prime * result + ((pskIdentity == null) ? 0 : pskIdentity.hashCode());
+        result = prime * result + ((rawPublicKey == null) ? 0 : rawPublicKey.hashCode());
+        result = prime * result + ((x509CommonName == null) ? 0 : x509CommonName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Identity other = (Identity) obj;
+        if (peerAddress == null) {
+            if (other.peerAddress != null)
+                return false;
+        } else if (!peerAddress.equals(other.peerAddress))
+            return false;
+        if (pskIdentity == null) {
+            if (other.pskIdentity != null)
+                return false;
+        } else if (!pskIdentity.equals(other.pskIdentity))
+            return false;
+        if (rawPublicKey == null) {
+            if (other.rawPublicKey != null)
+                return false;
+        } else if (!rawPublicKey.equals(other.rawPublicKey))
+            return false;
+        if (x509CommonName == null) {
+            if (other.x509CommonName != null)
+                return false;
+        } else if (!x509CommonName.equals(other.x509CommonName))
+            return false;
+        return true;
+    }
 }
