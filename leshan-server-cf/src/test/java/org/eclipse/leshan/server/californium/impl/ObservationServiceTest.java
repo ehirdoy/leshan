@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.leshan.LwM2m;
+import org.eclipse.leshan.core.californium.ExchangeUtil;
 import org.eclipse.leshan.core.node.LwM2mPath;
 import org.eclipse.leshan.core.node.codec.DefaultLwM2mNodeDecoder;
 import org.eclipse.leshan.core.observation.Observation;
@@ -139,8 +140,7 @@ public class ObservationServiceTest {
         coapRequest.getOptions().addUriPath(String.valueOf(target.getObjectInstanceId()));
         coapRequest.getOptions().addUriPath(String.valueOf(target.getResourceId()));
         coapRequest.setObserve();
-        coapRequest.setDestination(support.registration.getAddress());
-        coapRequest.setDestinationPort(support.registration.getPort());
+        coapRequest.setDestinationContext(ExchangeUtil.extractContext(support.registration.getIdentity()));
         Map<String, String> context = new HashMap<>();
         context.put(CoapRequestBuilder.CTX_REGID, registrationId);
         context.put(CoapRequestBuilder.CTX_LWM2M_PATH, target.toString());
