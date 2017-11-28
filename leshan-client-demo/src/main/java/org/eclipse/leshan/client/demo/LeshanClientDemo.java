@@ -225,10 +225,10 @@ public class LeshanClientDemo {
         } else {
             if (pskIdentity == null) {
                 initializer.setInstancesForObject(SECURITY, noSec(serverURI, 123));
-                initializer.setInstancesForObject(SERVER, new Server(123, 30, BindingMode.U, false));
+                initializer.setInstancesForObject(SERVER, new Server(123, 3600, BindingMode.U, false));
             } else {
                 initializer.setInstancesForObject(SECURITY, psk(serverURI, 123, pskIdentity, pskKey));
-                initializer.setInstancesForObject(SERVER, new Server(123, 30, BindingMode.U, false));
+                initializer.setInstancesForObject(SERVER, new Server(123, 3600, BindingMode.U, false));
             }
         }
         initializer.setClassForObject(DEVICE, MyDevice.class);
